@@ -13,6 +13,18 @@ bool IsDigits(string& s)
     return true;
 }
 
+UI GetNum(string str)
+{
+    double num = stod(str);
+
+    if (num < 0)
+        throw runtime_error("Negative number entered");
+    if (num > UINT_MAX)
+        throw runtime_error("Too large number entered");
+
+    return num;
+}
+
 vector<string> MySplit(string& s)
 {
     vector<string> splited;
@@ -86,7 +98,12 @@ void Dialog()
                 continue;
             }
 
-            n = stoi(splited.at(1));
+            try {
+                n = GetNum(splited.at(1));
+            } catch (runtime_error& error) {
+                cout << error.what() << endl;
+                continue;
+            }
         }
         else if (size == 3)
         {
@@ -96,8 +113,13 @@ void Dialog()
                 continue;
             }
 
-            m = stoi(splited.at(1));
-            n = stoi(splited.at(2));
+            try {
+                m = GetNum(splited.at(1));
+                n = GetNum(splited.at(2));
+            } catch (runtime_error& error) {
+                cout << error.what() << endl;
+                continue;
+            }
         }
 
         string keyWord = splited.at(0);
