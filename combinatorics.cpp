@@ -30,30 +30,27 @@ void Reduction(vector<UI> &numerator, vector<UI> &denominator)
 
 UI U(UI m, UI n)
 {
-    if (m > n)
-        return 0;
+    if (n == 1)
+        return 1;
 
-    UI result = 1;
+    double result = 1;
     for (UI i = 1; i <= m; ++i)
     {
-        if (double(UINT_MAX - result) / double(result) < double(n))
+        result *= n;
+        if (result > UINT_MAX)
             throw runtime_error("number is very big, sorry");
-        else
-            result *= n;
     }
-
     return result;
 }
 
 UI P(UI n)
 {
-    UI result = 1;
+    double result = 1;
     for (UI i = 1; i <= n; ++i)
     {
-        if (double(UINT_MAX - result) / double(result) < double(i))
+        result *= i;
+        if (result > UINT_MAX)
             throw runtime_error("number is very big, sorry");
-        else
-            result *= i;
     }
     return result;
 }
@@ -63,13 +60,12 @@ UI A(UI m, UI n)
     if (m > n)
         return 0;
 
-    UI result = 1;
+    double result = 1;
     for (UI i = n - m + 1; i <= n; ++i)
     {
-        if (double(UINT_MAX - result) / double(result) < double(i))
+        result *= i;
+        if (result > UINT_MAX)
             throw runtime_error("number is very big, sorry");
-        else
-            result *= i;
     }
     return result;
 }
@@ -113,13 +109,12 @@ UI C(UI m, UI n)
 
     Reduction(numerator, denominator);
 
-    UI result = 1;
+    double result = 1;
     for (auto& i : numerator)
     {
-        if (double(UINT_MAX - result) / double(result) < double(i))
+        result *= i;
+        if (result > UINT_MAX)
             throw runtime_error("number is very big, sorry");
-        else
-            result *= i;
     }
     return result;
 }
@@ -138,7 +133,7 @@ UI S(UI m, UI n)
     UI d = m < n-m+1 ? m : n-m+1;
     UI s = m < n-m+1 ? n-m+1 : m;
 
-    vector<UI> D(d);
+    vector<double> D(d);
     for (UI i = 0; i != d; D[i++] = 1);
 
     if (d == m)
@@ -147,9 +142,9 @@ UI S(UI m, UI n)
         {
             for (UI j = 1; j != d; ++j)
             {
-                if (UINT_MAX - (j + 1) * D[j] < D[j-1])
-                    throw runtime_error("number is very big, sorry");
                 D[j] = D[j-1] + (j + 1) * D[j];
+                if (D[j] > UINT_MAX)
+                    throw runtime_error("number is very big, sorry");
             }
         }
     }
@@ -159,9 +154,9 @@ UI S(UI m, UI n)
         {
             for (UI j = 1; j != d; ++j)
             {
-                if (UINT_MAX - (i + 1) * D[j-1] < D[j])
-                    throw runtime_error("number is very big, sorry");
                 D[j] = D[j] + (i + 1) * D[j-1];
+                if (D[j] > UINT_MAX)
+                    throw runtime_error("number is very big, sorry");
             }
         }
     }
@@ -170,12 +165,17 @@ UI S(UI m, UI n)
 
 UI B(UI n)
 {
-    UI res = 0;
+    if (n == 0)
+        return 1;
+
+    double res = 0;
     for (UI m = 1; m <= n; ++m)
     {
         try {
             UI temp = S(m, n);
             res += temp;
+            if (res > UINT_MAX)
+                throw runtime_error("number is very big, sorry");
         } catch (runtime_error& error) {
             throw;
         }
